@@ -2,4 +2,4 @@
 
 ### 笔记目录
 
-##### Day0
+##### [Day0](https://github.com/SmartFox97/PythonPractice/tree/master/noteBook/day0)
