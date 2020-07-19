@@ -23,7 +23,7 @@
 ### 二、列表的嵌套
 
 + 一个列表中的元素又是列表，那么这就是列表的嵌套
-+ [列表的嵌套]()
++ [列表的嵌套](<https://github.com/SmartFox97/PythonPractice/blob/master/day3/src/nesting.py>)
 
 ### 三、列表的常用操作
 
