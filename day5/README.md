@@ -401,6 +401,14 @@ lambda [形参1], [形参2], ... : [单行表达式] 或 [函数调用]
 ### 五、enumerate与del
 
 + enumerate的使用
+  
   + 通过 for 配合 enumerate 遍历容器同时获取元素索引位置、元素
+  
+  ```python
+  for _index, _value in enumerate(_list):
+      print(f'索引：{_index},数值：{_value}')
+  ```
+  
 + 通过del删除列表元素
+  
   + 通过del删除列表元素：`del 列表[索引]`
