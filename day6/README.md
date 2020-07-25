@@ -1,12 +1,20 @@
+# Day6 文件 2020.07.23
+
+------------
+
 # 0x00：概述
 
 ### 一、什么是文件
 
-TODO
++ 内存中存放的数据在计算机关机后就会消失。要长久保存数据，就要使用硬盘、光盘、U 盘等设备。为了便于数据的管理和检索，引入了“文件”的概念。
+
++ 计算机文件（或称文件、电脑档案、档案），是存储在某种长期储存设备上的一段数据流。所谓“长期储存设备”一般指磁盘、光盘、磁带等。其特点是所存信息可以长期、多次使用，不会因为断电而消失。
 
 ### 二、文件的作用
 
-+ 持久化存储数据
++ 把一些长期存储存放起来，可以让程序下一次执行的时候直接使用，而不必重新制作一份，省时省力
+
++ 通俗来讲，文件的作用就是持久化存储数据
 
 ------
 
@@ -28,7 +36,7 @@ TODO
     + 注意：文件名称，访问模式都是字符串格式
 
   ```python
-  f = open('fox.txt', 'w')
+  _file = open('fox.txt', 'w')
   ```
 
 + 关闭文件
@@ -37,13 +45,12 @@ TODO
 
     + 关闭文件，为了释放资源
     + 语法格式：`文件变量.close()`
-
-  + 自动关闭文件
-
-    ```python
-    with open("fox.txt", "w") as f:
-        pass  # 执行完缩进代码, 会自动关闭文件
-    ```
++ 自动关闭文件
+  
+```python
+  with open("fox.txt", "w") as _file:
+      pass  # 执行完缩进代码, 会自动关闭件
+```
 
 ### 二、文件的读写
 
@@ -52,22 +59,138 @@ TODO
   + 使用`write()`可以完成向文件写入数据
   + 语法格式：`文件变量.write(内容)`
 
+  ```python
+  """
+  # 1. 打开文件，只写方式打开
+  # 2. 写文件
+  # 3. 关闭文件
+  """
+  
+  # 1. 打开文件，只写方式打开
+  _file = open('fox.txt', 'w')
+  
+  # 2. 写文件
+  # 写文件格式：文件变量.write(所需的内容)
+  _file.write('hello abc')
+  _file.write(' hello python')
+  
+  # 3. 关闭文件
+  _file.close()
+  ```
+
 + 读数据
 
   + read
     + 语法格式：`内容变量 = 文件变量.read(n)`
     + `n`为读取的字符数，若不设置则全部读取
+
+  ```python
+  # 1. 打开文件，只读方式打开，'r'
+  # 2. 读取文件内容
+  # 3. 关闭文件
+  
+  # 1. 打开文件，只读方式打开，'r';'r'： 打开文件，必须存在，不存在，报错崩溃
+  _file = open('fox.txt', 'r')
+  
+  # 2. 读取文件内容
+  # 格式： 内容变量 = 文件变量.read(读取的长度)
+  #       如果read的长度不指定，默认读取全部
+  _data = _file.read(4) # 读取前4个
+  print(_data)
+  
+  _data = _file.read() # 接着前面，读完所有的
+  print(_data)
+  
+  # 3. 关闭文件
+  _file.close()
+  ```
+
   + readlines
     + `readlines()`一次全部读出，读取所有的行，按行作为分隔条件，返回列表（每行内容是一个元素）
     + 语法格式：`内容列表变量 = 文件变量.readlines()`
+
+  ```python
+  # 1. 打开文件，只读方式打开，'r'
+  # 2. 读取文件内容
+  # 3. 关闭文件
+  
+  # 1. 打开文件，只读方式打开，'r';'r'： 打开文件，必须存在，不存在，报错崩溃
+  _file = open('fox.txt', 'r')
+  
+  # 2. 读取文件内容
+  # readlines: 读取所有的行，按行作为分隔条件
+  # 格式：内容列表变量 = 文件变量.readlines()
+  _data = _file.readlines()
+  print(_data)
+  
+  # 通过for取出列表的所有元素
+  for _line in _data:
+      print(_line)
+  
+  # 3. 关闭文件
+  _file.close()
+  ```
+
   + readline
     + `readline()`每次读取文件中一行数据
     + 语法格式：`内容变量 = 文件变量.readline()`
 
+  ```python
+  # 1. 打开文件，只读方式打开，'r'
+  # 2. 读取文件内容
+  # 3. 关闭文件
+  
+  # 1. 打开文件，只读方式打开，'r';'r'： 打开文件，必须存在，不存在，报错崩溃
+  _file = open('fox.txt', 'r')
+  
+  # 2. 读取文件内容
+  # readline:   一次读取一行
+  # readline格式：内容变量 = 文件变量.readline()
+  _data = _file.readline()
+  print(_data)
+  
+  # 3. 关闭文件
+  f.close()
+  ```
+
 + 分片读取文件内容
 
+  > 在处理数据时，有可能会碰到好几个 G 大小的文件。如果通过一些工具（例如：NotePad++）打开它，会发生错误，无法读取任何内容；
+  >
+  > 这个时候若使用Python传统的读取方式`read()`或者`readlines()`方法将整个文件读入内存时，在文件较大的时候，往往会引发内存溢出错误`MemoryError`;
+  >
+  > 所以在这个时候，我们就可以选择以分片读入的方式，一点一点的将内容读入内存中。
+
+  + 姿势一：使用`readline()`逐行读取
+
+  ```
+  with open("fox.txt", "r") as _file:
+      while True:
+          _line = _file.readline()  # 逐行读取
+          if not _line:
+              break
+          print(_line)
+  ```
+
+  + 姿势二：指定每次读取的长度
+
   ```python
-  TODO
+  chunk_size = 100 # 指定读取长度
+  with open("fox.txt", "r") as _file:
+      while True:
+          _data = _file.read(chunk_size)
+          if not _data:
+              break
+          print(_data)
+  ```
+
+  + 姿势三：使用`fileinput`模块
+
+  ```python
+  import fileinput
+  
+  for _line in fileinput.input(['fox.txt']):
+      print(_line)
   ```
 
 ------------------
@@ -94,7 +217,7 @@ TODO
 
   ```python
   # 'r'，只读方式打开文件，若文件不存在则会报错
-  f = open('abc.txt', 'r')
+  f = open('fox.txt', 'r')
   
   f.close()
   ```
@@ -105,7 +228,7 @@ TODO
 
   ```python
   # 'w'，只写方式打开文件，若文件不存在则会新建，若文件存在则会清空原文件内容
-  f = open('abc.txt', 'w')
+  f = open('fox.txt', 'w')
   
   f.close()
   ```
@@ -117,7 +240,7 @@ TODO
 
   ```python
   # 1. 'a'，追加方式打开文件
-  f = open('abc.txt', 'a')
+  f = open('fox.txt', 'a')
   
   # 2. 写数据
   f.write('test_write')
@@ -143,36 +266,99 @@ TODO
 
 ### 一、文件重命名
 
-TODO
++ os模块中`rename()`可以完成对文件的重命名操作
++ 语法格式：`os.rename(旧的文件名，新的文件名)`
+
+```python
+import os
+
+os.rename("七七の女装照.jpg", "七七の巫女照.jpg")
+```
 
 ### 二、删除文件
 
-TODO
++ os模块中的`remove()`可以完成对文件的删除操作，不能删除文件夹
++ 语法格式：`os.remove(文件名)`
+
+```python
+import os
+
+os.remove("七七の美颜.jpg")
+```
 
 ### 三、创建文件夹
 
-TODO
++ 创建文件夹，只能创建文件夹，不能创建普通文件
++ 语法格式：`os.mkdir(文件夹名)`
+
+```python
+import os
+
+os.mkdir("藤球のLolita")
+```
 
 ### 四、删除空文件夹
 
-TODO
++ 删除文件夹，只能删除空的文件夹
++ 语法格式：`os.rmdir(待删除文件夹的名字)`
+
+```python
+import os
+
+os.rmdir("狐狸の秘密")
+```
 
 ### 五、获取当前目录
 
-TODO
++ 获取当前工作的路径
++ 语法格式：`路径变量 = os.getcwd()`
+
+```python
+import os
+
+_path = os.getcwd()
+print(_path)
+```
 
 ### 六、改变默认目录
 
-TODO
++ 改变默认目录，切换指定的路径
++ 语法格式：`os.chdir(改变的路径)`
+
+```python
+import os
+
+os.chdir("../")  # 切换到上一级路径
+```
 
 ### 七、获取目录列表
 
-TODO
++ 获取某个目录的文件信息，获取文件夹或文件的名字
++ 语法格式：`目录列表变量 = os.listdir(目录路径)`
+  - 如果不指定目录，默认当前路径
+
+```python
+import os
+
+file_list = os.listdir()  # 获取当前目录下的文件信息
+print(file_list)
+```
 
 ### 八、判断文件是否存在
 
-TODO
++ 语法格式：`os.path.exists(需要判断的文件)`
+  - 如果文件存在返回`True`，如果文件不存在返回`False`
+
+```python
+import os
+
+_isfile = os.path.exists("苏苏の宝贝")
+print(_isfile)
+```
 
 ### 九、字符串与容器类型相互转换
 
-TODO
+| 函数             | 说明                                                       |
+| ---------------- | ---------------------------------------------------------- |
+| str(容器变量)    | 将 容器变量 转换为一个字符串                               |
+| eval(字符串内容) | 佛系函数，将传入的字符串内容，按格式转换为对应的容器类型。 |
