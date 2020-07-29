@@ -8,3 +8,5 @@
 + [Day 6 2020.07.23](https://github.com/SmartFox97/PythonPractice/tree/master/day6)
 + [Day 7 2020.07.25](https://github.com/SmartFox97/PythonPractice/tree/master/day7)
 + [Day 8 2020.07.26](https://github.com/SmartFox97/PythonPractice/tree/master/day8)
++ [Day 9 2020.07.28](https://github.com/SmartFox97/PythonPractice/tree/master/day9)
++ [Day 10 2020.07.29](https://github.com/SmartFox97/PythonPractice/tree/master/day10)
