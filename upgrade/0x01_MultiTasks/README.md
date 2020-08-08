@@ -431,3 +431,151 @@
   + **优点：**开销小
   + **缺点：**不能使用多核
 
+------
+
+# 0x05：协程
+
+### 一、什么是协程
+
++ 什么是协程
+
+  + **协程（Coroutine）**是计算机程序的一类组件，又称微线程，纤程，是一种协作式多任务执行方式，它允许程序在执行过程中被挂起和恢复；
+  + 相对于其他多任务工作方式，协程更为灵活
+
++ 协作式多任务与抢占式多任务
+
+  + 协作式多任务
+
+    **协作式多任务（Cooperative Multitasking）**是一种实现多任务处理（multi task）的方式，多任务是使电脑能同时处理多个程序的技术，相对于抢占式多任务(Preemptive multitasking)，协作式多任务要求每一个运行中的程序，定时放弃自己的运行权利，告知操作系统可让下一个程序运行；也就是说下一个进程被调度的**前提**是当前进程**主动**放弃时间片。
+
+  + 抢占式多任务
+
+    **抢占式多任务处理（Preemption）**是计算机操作系统中，一种实现多任务处理（multi task）的方式，相对于**协作式多任务（Cooperative Multitasking）**而言，抢占式环境下，操作系统完全决定进程调度方案，**操作系统可以剥夺耗时长的进程的时间片**，提供给其它进程。
+
+### 二、协程的优点
+
++ 最大的优势就是协程**极高的执行效率**。因为函数切换不是线程切换，而是由程序自身控制，因此，没有线程切换的开销，和多线程比，线程数量越多，协程的性能优势就越明显。
++ 第二大优势就是不需要多线程的锁机制，因为只有一个线程，也不存在同时写变量冲突，在协程中控制共享资源不加锁，只需要判断状态就好了，所以执行效率比多线程高很多。
+
+### 三、协程的使用
+
++ gevent
+
+  + 安装
+
+  ```shell
+  pip install gevent
+  ```
+
+  + 导入gevent模块
+
+  ```python
+  import gevent
+  ```
+
+  + 创建协程对象
+
+  ```python
+  g1 = gevent.spawn(sing)
+  g2 = gevent.spawn(dance)
+  ```
+
+  + 等待协程执行
+
+  ```python
+  g1.join()  # 主线程等待g1协程执行完成 （耗时操作）
+  g2.join()  # 主线程等待g2协程执行完成 （耗时操作）
+  ```
+
+  + 举个栗子
+
+  ```python
+  # 注意： gevent是遇到耗时操作， 自动切换
+  # 哪些是耗时操作: g1.join() gevent.sleep(1)
+  import gevent
+  
+  def sing():
+      for i in range(3):
+          print("唱歌...")
+          gevent.sleep(1) # 出现耗时操作、挂起
+  
+  def dance():
+      for i in range(3):
+          print("跳舞...")
+          gevent.sleep(1) # 出现耗时操作、挂起
+  
+  if __name__ == '__main__':
+      g1 = gevent.spawn(sing)
+      g2 = gevent.spawn(dance)
+  
+      g1.join()  # 主线程等待g1协程执行完成 （耗时操作）
+      g2.join()  # 主线程等待g2协程执行完成 （耗时操作）
+  ```
+
+  输出结果
+
+  ```shell
+  唱歌...
+  跳舞...
+  唱歌...
+  跳舞...
+  唱歌...
+  跳舞...
+  
+  Process finished with exit code 0
+  ```
+
++ 猴子补丁
+
+  为了解决gevent不识别其他的耗时操作的缺点，我们可以给他打上”猴子“补丁；这样它就能识别`time.sleep`、`socket`、`send`、`recv`等耗时操作了。
+
+  + 导入补丁
+
+  ```python
+  from gevent import monkey
+  ```
+
+  + 打补丁
+
+  ```python
+  monkey.patch_all()
+  ```
+
+  + 举个栗子
+
+  ```python
+  import gevent
+  import time
+  from gevent immport monkey
+  
+  monkey.patch_all() # 打补丁
+  
+  def sing():
+      for _ in range(3):
+          print('singing~')
+          time.sleep(1)
+          
+  def dance():
+      for _ in range(3):
+          print('dancing~')
+          gevent.sleep(1)
+  
+  if __name__ == '__main__':
+      g1 = gevent.spawn(sing)
+      g2 = gevent.spawn(dance)
+      g1.join()
+      g2.join()
+  ```
+
+  输出结果
+
+  ```shell
+  singing~
+  dancing~
+  singing~
+  dancing~
+  singing~
+  dancing~
+  
+  Process finished with exit code 0
+  ```
