@@ -239,10 +239,54 @@ if __name__ == '__main__':
 
 + 多任务版
 
-  在现实生产环境中，一个服务端不可能只就服务于一个客户端；通常一个服务端是要能服务多个客户端，
+  在现实生产环境中，一个服务端不可能只就服务于一个客户端；通常一个服务端是要能服务多个客户端，以下是多任务的实现思路：
+
+  1. 编写一个TCP服务端程序，循环等待接受客户端的连接请求
+  2. 当客户端和服务端建立连接成功，创建子线程，使用子线程专门处理客户端的请求，防止主线程阻塞
+  3. 把创建的子线程设置成为守护主线程，防止主线程无法退出。
 
 ```python
+import socket
+import threading
+# 客户端服务处理函数
+def handle_client_request(_socket, _info):
+    while True:
+        # 获取客户端发送的原始数据
+        _data = _socket.recv(1024)
+        # 容器类型判断是否有数据可以直接使用if语句进行判断，如果容器类型里面有数据表示条件成立，否则条件失败
+        # 容器类型: 列表、字典、元组、字符串、set、range、二进制数据
+        if _data:
+            print(_data.decode("utf-8"), _info)
+            # 回复
+            _socket.send("数据接收正常...".encode("utf-8"))
+        else:
+            print("客户端下线了:", _info)
+            break
+    # 关闭服务端与客户端的套接字
+    _socket.close()
 
+if __name__ == '__main__':
+    # 创建socket套接字   AF_INET -> 采用IPv4 ；SOCK_STREAM -> 采用TCP传输协议
+    tcp_server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # 设置启用端口复用，当程序结束时，立即释放端口号
+    tcp_server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, True)
+    # 绑定监听端口号
+    tcp_server_socket.bind(("", 9090))
+    # 配置监听最大等待连接个数
+    tcp_server_socket.listen(128)
+    # 循环等待接收客户端的连接请求
+    while True:
+        # 等待客户端建立连接请求，返回（conn，info），若无连接则会一直保持阻塞状态
+        # 其中conn由service_socket接收，是与客户端建立连接的套接字
+        # info由client_info接收，是客户端的地址与端口信息
+        service_socket, client_info = tcp_server_socket.accept()
+        print("客户端连接成功:", client_info)
+        # 当客户端和服务端建立连接成功以后，创建一个子线程处理接下来的客户端讯息
+        client_thread = threading.Thread(target=handle_client_request, args=(service_socket, client_info))
+        # 设置守护主线程，当主线程退出时自动终止子线程
+        client_thread.setDaemon(True)
+        # 启动子线程
+        client_thread.start()
 ```
 
 
@@ -269,12 +313,12 @@ $$
 
 ### `send`原理
 
-Q：`send`是不是直接把数据发给服务端?
+**Q：**`send`是不是直接把数据发给服务端?
 
-A：不是，要想发数据，必须得**通过网卡发送数据**，应用程序是无法直接通过网卡发送数据的，它需要调用操作系统接口，也就是说，应用程序把发送的数据先写入到**发送缓冲区**(内存中的一片空间)，再**由操作系统控制网卡把发送缓冲区的数据发送给服务端网卡** 。
+**A：**不是，要想发数据，必须得**通过网卡发送数据**，应用程序是无法直接通过网卡发送数据的，它需要调用操作系统接口，也就是说，应用程序把发送的数据先写入到**发送缓冲区**(内存中的一片空间)，再**由操作系统控制网卡把发送缓冲区的数据发送给服务端网卡** 。
 
 ### `recv`原理
 
-Q：`renv`是不是直接从客户端接收数据?
+**Q：**`renv`是不是直接从客户端接收数据?
 
-A：不是，**应用软件是无法直接通过网卡接收数据的**，它需要调用操作系统接口，**由操作系统通过网卡接收数据**，把接收的数据**写入到接收缓冲区**(内存中的一片空间），应用程序**再从接收缓存区获取客户端发送的数据**。
+**A：**不是，**应用软件是无法直接通过网卡接收数据的**，它需要调用操作系统接口，**由操作系统通过网卡接收数据**，把接收的数据**写入到接收缓冲区**(内存中的一片空间），应用程序**再从接收缓存区获取客户端发送的数据**。
