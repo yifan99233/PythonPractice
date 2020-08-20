@@ -16,18 +16,15 @@
   class Person(object):
       def __init__(self):
           self.__age = 0
-  
       @property
       def age(self):
           return self.__age
-  
       @age.setter
       def age(self, new_age):
           if new_age >= 150:
               print('成精了')
           else:
               self.__age = new_age
-  
   if __name__ == '__main__':
       p = Person()
       print(p.age)
@@ -43,7 +40,7 @@
 
   输出结果
 
-  ```python
+  ```shell
   0
   100
   成精了
@@ -62,24 +59,19 @@
 
   ```python
   class Person(object):
-  
       def __init__(self):
           self.__age = 0
-  
       def get_age(self):
           """当获取age属性的时候会执行该方法"""
           return self.__age
-  
       def set_age(self, new_age):
           """当设置age属性的时候会执行该方法"""
           if new_age >= 150:
               print("成精了")
           else:
               self.__age = new_age
-  
       # 类属性方式的property属性
       age = property(get_age, set_age)
-  
   # 创建person
   p = Person()
   print(p.age)
@@ -125,19 +117,16 @@ with open("fox.txt", "w") as _file:
 
 ```python
 class File(object):
-
     # 初始化方法
     def __init__(self, _name, _op):
         # 定义变量保存文件名和打开模式
         self.fileName = _name
         self.operator = _op
-
     # 上文方法
     def __enter__(self):
         print("进入上文方法")
         self.file = open(self.fileName,self.operator)
         return self.file
-
     # 下文方法
     def __exit__(self, exc_type, exc_val, exc_tb):
         print('进入下文方法')
