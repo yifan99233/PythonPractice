@@ -1,0 +1,3 @@
+2020-08-21 21:27:27,902 - 05_logging_file.py[line:9] - WARNING: 这是一个warning级别的日志信息
+2020-08-21 21:27:27,903 - 05_logging_file.py[line:10] - ERROR: 这是一个error级别的日志信息
+2020-08-21 21:27:27,903 - 05_logging_file.py[line:11] - CRITICAL: 这是一个critical级别的日志信息
