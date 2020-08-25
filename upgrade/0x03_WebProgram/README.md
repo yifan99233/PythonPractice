@@ -54,24 +54,65 @@
 
       ? 后面的 page 表示第一个参数，后面的参数都使用 & 进行连接
 
-### 三、查看HTTP协议通讯过程
-
 ------
 
 # 0x01：HTTP请求报文
 
 ### 一、GET请求报文
 
-+ 请求行
-+ 请求头
-+ 空行
+```http
+---- 请求行 ----
+GET / HTTP/1.1  # GET请求方式 请求资源路径 HTTP协议版本
+---- 请求头 -----
+Host: www.smartfox.cc  # 服务器的主机地址和端口号,默认是80
+Connection: keep-alive # 和服务端保持长连接
+Upgrade-Insecure-Requests: 1 # 让浏览器升级不安全请求，使用https请求
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36  # 用户代理，也就是客户端的名称
+Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8 # 可接受的数据类型
+Accept-Encoding: gzip, deflate # 可接受的压缩格式
+Accept-Language: zh-CN,zh;q=0.9 #可接受的语言
+Cookie: csrftoken=ZIVKMSEdmdJbowTnXtRPXByIqxK1WF1ronGQXKWdp51WnSvmlRyqsKzZFPAojcLF; sessionid=as3sop6t2igilg76zll45m045udfsoa7; # 登录用户的身份标识
+
+---- 空行 ----
+```
+
++ 也就是说GET请求报文是由以下部分组成的：
+
+  + 请求行
+
+  + 请求头
+
+  + 空行
 
 ### 二、POST请求报文
 
-+ 请求行
-+ 请求头
-+ 空行
-+ 请求体
+```http
+---- 请求行 ----
+POST /admin.php?next=index.php HTTP/1.1 # POST请求方式 请求资源路径 HTTP协议版本
+---- 请求头 ----
+Host: www.smartfox.cc # 服务器的主机地址和端口号,默认是80
+Connection: keep-alive # 和服务端保持长连接
+Content-Type: application/x-www-form-urlencoded  # 告诉服务端请求的数据类型
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36 # 客户端的名称
+---- 空行 ----
+---- 请求体 ----
+username=admin&pass=admin # 请求参数
+```
+
++ 也就是说POST报文是由以下部分组成：
+  + 请求行
+  + 请求头
+  + 空行
+  + 请求体
+
+### 三、POST与GET之间的区别
+
+![get和post请求报文](https://oss.smartfox.cc/2020/08/25/b3dd4a15192dc.png)
+
++ 一个HTTP请求报文可以由**请求行、请求头、空行和请求体**4个部分组成。
++ **GET方式的请求报文没有请求体，只有请求行、请求头、空行组成**。
++ **POST方式的请求报文可以有请求行、请求头、空行、请求体四部分组成**。
+  + **注意:POST方式可以允许没有请求体，但是这种格式很少见**。
 
 ------
 
@@ -79,12 +120,41 @@
 
 ### 一、HTTP响应报文
 
-+ 响应行
-+ 响应头
-+ 空行
-+ 响应体
+```http
+--- 响应行/状态行 ---
+HTTP/1.1 200 OK # HTTP协议版本 状态码 状态描述
+--- 响应头 ---
+Server: Tengine # 服务器名称
+Content-Type: text/html; charset=UTF-8 # 内容类型
+Transfer-Encoding: chunked # 发送给客户端内容不确定内容长度，发送结束的标记是0\r\n, Content-Length表示服务端确定发送给客户端的内容大小，但是二者只能用其一。
+Connection: keep-alive # 和客户端保持长连接
+Date: Fri, 23 Nov 2018 02:01:05 GMT # 服务端的响应时间
+--- 空行 ---
+--- 响应体 ---
+<!DOCTYPE html><html lang=“en”>…</html> # 响应给客户端的数据
+```
+
++ 所以一个成熟的HTTP响应报文是由以下部分组成的
+  + 响应行
+  + 响应头
+  + 空行
+  + 响应体
+
+![响应报文](https://oss.smartfox.cc/2020/08/25/b15c3ddde0ca0.png)
 
 ### 二、常见HTTP状态码
+
+| 状态码 | 状态                  | 说明                                                         |
+| :----- | :-------------------- | ------------------------------------------------------------ |
+| 200    | OK                    | 请求成功                                                     |
+| 201    | Created               | 请求已经被实现，而且所需资源已建立，且其URI已经随头部信息返回。 |
+| 202    | Accepted              | 服务器已接受请求，但尚未处理。                               |
+| 307    | Temporary Redirect    | 重定向                                                       |
+| 400    | Bad Request           | 错误的请求，请求地址或者参数有误                             |
+| 403    | Forbidden             | 服务器已经理解请求，但是拒绝执行它。                         |
+| 404    | Not Found             | 请求资源在服务器不存在                                       |
+| 500    | Internal Server Error | 服务器内部源代码出现错误                                     |
+| 502    | Bad Gateway           | 作为网关或代理的服务器尝试执行请求时，从上游服务接到无效的响应。 |
 
 -------
 
