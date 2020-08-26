@@ -41,7 +41,6 @@ result.group()
 ```python
 import re
 
-
 # 使用match方法进行匹配操作
 result = re.match("smartfox","smartfox.cc")
 # 获取匹配结果
